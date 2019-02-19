@@ -1,3 +1,6 @@
+const db = require('../db/db');
+
+
 var calculateController = {};
 
 calculateController.getCalculate = function(req, res, next){
@@ -15,12 +18,15 @@ calculateController.getCalculate = function(req, res, next){
     calculate(params, (results) => {
       res.json(results);
     })
-
-    // res.header('content-type', 'json');
-    //res.json(params);
   } else {
     res.send('not enough params')
   }
+}
+
+calculateController.postCalculate = function(req, res, next){
+  calculate(req.body, (results) => {
+    res.json(results);
+  })
 }
 
 var calculate = function(params, callback) {

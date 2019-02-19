@@ -9,6 +9,7 @@
   "author": "Brett Nitschke",
   "license": "ISC",
   "dependencies": {
+    "level": "^4.0.0",
     "restify": "^7.7.0"
   }
 }
