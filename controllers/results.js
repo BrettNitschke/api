@@ -41,6 +41,8 @@ getIndividualResult = function(index){
     })
   }).then((result)=>{
      return arrayInsert(result);
+  }, (err)=>{
+    return;
   })
 }
 
