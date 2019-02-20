@@ -1,6 +1,6 @@
-//DEPRECATED 
-
-const db = require('../db/db');
+const fs = require('fs');
+const mongoose = require('mongoose');
+const Record = require('../model/record');
 
 const resultsController = {};
 var results = [];
@@ -8,12 +8,30 @@ var results = [];
 resultsController.getResults = function(req, res){
   //get all results
   if (Object.keys(req.query).length === 0){
-    getResults(Number.MAX_SAFE_INTEGER, (results) => {
+    getAll((results) => {
       res.json(results);
     })
   } else if (req.query.count){
     let count = parseInt(req.query.count);
-    getResults(count, (results) => {
+    getNumLatest(count, (results) => {
+      res.json(results);
+    })
+  } else if (req.query.d1 && req.query.d2){
+    let d1 = new Date(req.query.d1);
+    let d2 = new Date(req.query.d2);
+    getByDate(d1, d2, (results) => {
+      res.json(results);
+    })
+  } else if (req.query.d1){
+    let d1 = new Date(req.query.d1);
+    let d2 = new Date();
+    getByDate(d1, d2, (results) => {
+      res.json(results);
+    })
+  } else if (req.query.d2){
+    let d1 = new Date("2000-01-01");
+    let d2 = new Date(req.query.d2);
+    getByDate(d1, d2, (results) => {
       res.json(results);
     })
   } else {
@@ -21,58 +39,28 @@ resultsController.getResults = function(req, res){
   }
 }
 
-getNumberOfResults = function(){
-  return new Promise((resolve, reject) => {
-    db.get(-1, (err, result) => {
-      if (err)
-        reject(err);
-      else {
-        resolve(parseInt(result.last));
-      }
-    })
+getAll = function(callback){
+  Record.find().sort('-date').exec((err, records) => {
+    if(err)
+      callback({error: err});
+    callback(records);
   })
 }
 
-getIndividualResult = function(index){
-  return new Promise((resolve, reject) => {
-    db.get(index, (err, result) =>{
-      if (err)
-        reject(err);
-      else
-        resolve(result);
-    })
-  }).then((result)=>{
-     return arrayInsert(result);
-  }, (err)=>{
-    return;
+getNumLatest = function(num, callback){
+  Record.find().sort('-date').limit(num).exec((err, records) => {
+    if(err)
+      callback({error: err});
+    callback(records);
   })
 }
 
-arrayInsert = function(result) {
-  results.push(result);
-}
-
-getResults = async function (numToFetch, callback){
-  try {
-    let numResults = await getNumberOfResults();
-    var floor;
-    if (numToFetch >= numResults) {
-      floor = 0;
-    } else {
-      floor = numResults - numToFetch;
-    }
-    results = [];
-    let promises = [];
-    for (let i = numResults; i > floor; i--){
-      promises.push(getIndividualResult(i));
-    }
-
-    Promise.all(promises).then(()=>{
-      callback(results);
-    })
-  } catch(err){
-    console.log("ERROR " + err);
-  }
+getByDate = function(d1, d2, callback){
+  Record.find({"date": {"$gte": d1, "$lt": d2}}).sort('-date').exec((err, records) => {
+    if(err)
+      callback({error: err});
+    callback(records);
+  })
 }
 
 module.exports = resultsController;
