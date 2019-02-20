@@ -1,6 +1,11 @@
 const restify = require('restify');
 const calculateController = require('./controllers/calculate');
-const resultsController = require('./controllers/results');
+const resultsController = require('./controllers/resultsV2');
+const store = require('./store/store');
+
+store.init((msg)=>{
+  console.log(msg);
+})
 
 var server = restify.createServer();
 server.use(restify.plugins.queryParser());
