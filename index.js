@@ -3,7 +3,7 @@ const calculateController = require('./controllers/calculate');
 const resultsController = require('./controllers/results');
 const mongoose = require('mongoose');
 
-const connectionString = "connectionString=mongodb://Bnitschke:Charlie17@wine-shard-00-00-bmlw1.mongodb.net:27017,wine-shard-00-01-bmlw1.mongodb.net:27017,wine-shard-00-02-bmlw1.mongodb.net:27017/test?ssl=true&replicaSet=Wine-shard-0&authSource=admin"
+const connectionString = //string
 mongoose.connect(connectionString, { useNewUrlParser: true }).then(() => console.log('mongoose connection succesful'))
   .catch((err) => console.error(err));
 
